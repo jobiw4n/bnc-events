@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bnc-events",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+
+  // Everything in ./public is served as a static asset. Requests that don't
+  // match a file fall through to the Worker, which is how /api/* works.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+
+  "observability": {
+    "enabled": true
+  },
+
+  // Uncomment after creating the KV namespace in the dashboard and pasting
+  // its ID. The Worker runs without it — it just skips caching.
+  // "kv_namespaces": [
+  //   { "binding": "EVENTS_CACHE", "id": "PASTE_NAMESPACE_ID_HERE" }
+  // ],
+
+  "vars": {
+    // Public Turnstile key. Safe to commit — the secret half is a Worker secret.
+    "TURNSTILE_SITE_KEY": ""
+  }
+}

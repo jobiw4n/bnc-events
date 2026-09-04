@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Community Events Calendar — Bucks Nonprofit Connection</title>
+<meta name="description" content="A shared calendar of Bucks County nonprofit events, so organizations can plan around each other instead of competing for the same night.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="shell masthead-inner">
+    <a class="wordmark" href="/">
+      <span class="wordmark-short">BNC</span>
+      <span class="wordmark-full">Bucks Nonprofit Connection</span>
+    </a>
+    <a class="masthead-link" href="#submit">Add your event</a>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <div class="shell">
+      <h1>Community events calendar</h1>
+      <p class="lede">
+        Bucks County nonprofits share their event dates here so we can plan around
+        each other. Check it before you set a date, then add your own event to the
+        list.
+      </p>
+    </div>
+  </section>
+
+  <div class="toolbar" id="toolbar">
+    <div class="shell toolbar-inner">
+      <div class="search">
+        <label for="search-input">Search events</label>
+        <input type="search" id="search-input" placeholder="Name, organization, or town" autocomplete="off">
+      </div>
+      <div class="views" role="group" aria-label="Calendar view">
+        <button type="button" class="view-btn is-active" data-view="list" aria-pressed="true">List</button>
+        <button type="button" class="view-btn" data-view="month" aria-pressed="false">Month</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <p class="result-count" id="result-count" role="status" aria-live="polite"></p>
+
+    <!-- List view -->
+    <section id="list-view" class="view">
+      <div id="list-body"></div>
+    </section>
+
+    <!-- Month view -->
+    <section id="month-view" class="view" hidden>
+      <div class="month-nav">
+        <button type="button" id="month-prev" class="month-arrow" aria-label="Previous month">&larr;</button>
+        <h2 id="month-label"></h2>
+        <button type="button" id="month-next" class="month-arrow" aria-label="Next month">&rarr;</button>
+      </div>
+      <div class="weekdays" aria-hidden="true">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
+        <span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div class="month-grid" id="month-grid"></div>
+    </section>
+  </div>
+
+  <!-- Submission form -->
+  <section class="submit" id="submit">
+    <div class="shell">
+      <h2>Add your event</h2>
+      <p class="lede">
+        Events appear on the calendar right away. Everything except your notes to
+        BNC is shown publicly, so leave out anything you would not want listed.
+      </p>
+
+      <form id="event-form" novalidate>
+        <fieldset>
+          <legend>The event</legend>
+
+          <div class="field">
+            <label for="f-name">Event name <span class="req">required</span></label>
+            <input id="f-name" type="text" maxlength="150" required>
+          </div>
+
+          <div class="field">
+            <label for="f-type">Type of event <span class="req">required</span></label>
+            <select id="f-type" required>
+              <option value="">Choose one</option>
+              <option value="In-Person">In-person</option>
+              <option value="Virtual">Virtual</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+
+          <div class="field span-2">
+            <label for="f-description">Description <span class="req">required</span></label>
+            <textarea id="f-description" rows="5" maxlength="2000" required></textarea>
+            <p class="help">A short paragraph. What is it, who is it for, what does it support?</p>
+          </div>
+
+          <div class="field">
+            <label for="f-cost">Cost <span class="req">required</span></label>
+            <input id="f-cost" type="text" maxlength="60" placeholder="Free, $50, $25 suggested" required>
+          </div>
+
+          <div class="field">
+            <label for="f-website">Event website</label>
+            <input id="f-website" type="url" maxlength="300" placeholder="https://">
+          </div>
+
+          <div class="field">
+            <label for="f-attendance">Expected attendance</label>
+            <input id="f-attendance" type="number" min="0" max="1000000" inputmode="numeric">
+          </div>
+
+          <div class="field">
+            <label for="f-image">Event image or organization logo</label>
+            <input id="f-image" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
+            <p class="help">JPG, PNG, GIF, or WEBP. 5 MB maximum.</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>When</legend>
+
+          <div class="field">
+            <label for="f-start-date">Start date <span class="req">required</span></label>
+            <input id="f-start-date" type="date" required>
+          </div>
+
+          <div class="field">
+            <label for="f-start-time">Start time</label>
+            <input id="f-start-time" type="time">
+          </div>
+
+          <div class="field">
+            <label for="f-end-date">End date</label>
+            <input id="f-end-date" type="date">
+            <p class="help">Only for events running more than one day.</p>
+          </div>
+
+          <div class="field">
+            <label for="f-end-time">End time</label>
+            <input id="f-end-time" type="time">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Where</legend>
+
+          <div class="field">
+            <label for="f-loc-name">Venue name <span class="req">required</span></label>
+            <input id="f-loc-name" type="text" maxlength="150" required>
+            <p class="help" id="loc-name-help">For virtual events, name the platform.</p>
+          </div>
+
+          <div class="field">
+            <label for="f-loc-phone">Venue phone</label>
+            <input id="f-loc-phone" type="tel" maxlength="40">
+          </div>
+
+          <div class="field">
+            <label for="f-loc-address">Street address <span class="req" id="addr-req">required</span></label>
+            <input id="f-loc-address" type="text" maxlength="200">
+          </div>
+
+          <div class="field">
+            <label for="f-loc-csz">City, state, ZIP</label>
+            <input id="f-loc-csz" type="text" maxlength="120" placeholder="Doylestown, PA 18901">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Who to contact</legend>
+
+          <div class="field">
+            <label for="f-org-name">Organizer name <span class="req">required</span></label>
+            <input id="f-org-name" type="text" maxlength="120" required>
+          </div>
+
+          <div class="field">
+            <label for="f-org-email">Organizer email <span class="req">required</span></label>
+            <input id="f-org-email" type="email" maxlength="150" required>
+          </div>
+
+          <div class="field">
+            <label for="f-org-phone">Organizer phone <span class="req">required</span></label>
+            <input id="f-org-phone" type="tel" maxlength="40" required>
+          </div>
+
+          <div class="field span-2">
+            <label for="f-comments">Notes for BNC</label>
+            <textarea id="f-comments" rows="3" maxlength="1000"></textarea>
+            <p class="help">Not published. Anything you want us to know about this listing.</p>
+          </div>
+        </fieldset>
+
+        <!-- Honeypot: hidden from people, filled in by bots. -->
+        <div class="honeypot" aria-hidden="true">
+          <label for="f-website2">Leave this blank</label>
+          <input id="f-website2" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div id="turnstile-slot"></div>
+
+        <div class="form-foot">
+          <button type="submit" id="form-submit">Add event</button>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <p>Bucks Nonprofit Connection</p>
+    <p class="footer-note">
+      Listings are submitted by the organizations that run them. Confirm details
+      with the organizer before you go.
+    </p>
+  </div>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

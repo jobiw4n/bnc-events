@@ -1,0 +1,13 @@
+{
+  "name": "bnc-events",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bucks Nonprofit Connection community events calendar",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
