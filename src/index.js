@@ -33,7 +33,7 @@ const ALLOWED_FIELDS = [
   'Start Date', 'Start Time', 'End Date', 'End Time', 'Event Type',
   'Expected Attendance', 'Location Name', 'Location Address',
   'Location City State Zip', 'Location Phone', 'Description', 'Cost',
-  'Website', 'Comments for BNC',
+  'Website', 'Comments for BNC','Submitted By',
 ];
 
 export default {

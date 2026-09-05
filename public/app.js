@@ -329,6 +329,7 @@ const FIELD_MAP = {
   'Cost': 'f-cost',
   'Website': 'f-website',
   'Comments for BNC': 'f-comments',
+  'Submitted By':'f-submitted-by',
 };
 
 const REQUIRED = [
@@ -434,16 +435,63 @@ async function submitForm() {
       return;
     }
 
+    insertLocally(event, data.id, file);
     el('event-form').reset();
     setStatus(status, 'Added. Your event is on the calendar.', 'is-ok');
     button.disabled = false;
 
     if (window.turnstile) window.turnstile.reset();
-    await loadEvents();
   } catch (err) {
     setStatus(status, 'The event could not be sent. Check your connection and try again.', 'is-error');
     button.disabled = false;
   }
+}
+
+/**
+ * Shows a just-submitted event immediately, without refetching.
+ *
+ * KV is eventually consistent, so /api/events can serve a cached copy for up
+ * to a minute after handleSubmit purges it. The row is already safely in the
+ * sheet — this only fixes what the submitter sees in the meantime. Everyone
+ * else picks it up on the normal cycle.
+ */
+function insertLocally(fields, id, file) {
+  // doGet drops past events, so don't show one the server would omit.
+  if (fields['Start Date'] < toISO(new Date())) return;
+
+  const ev = { id: id || 'pending' };
+  const map = {
+    'Event Name': 'eventName',
+    'Organizer Name': 'organizerName',
+    'Organizer Phone': 'organizerPhone',
+    'Organizer Email': 'organizerEmail',
+    'Start Date': 'startDate',
+    'Start Time': 'startTime',
+    'End Date': 'endDate',
+    'End Time': 'endTime',
+    'Event Type': 'eventType',
+    'Expected Attendance': 'expectedAttendance',
+    'Location Name': 'locationName',
+    'Location Address': 'locationAddress',
+    'Location City State Zip': 'locationCityStateZip',
+    'Location Phone': 'locationPhone',
+    'Description': 'description',
+    'Cost': 'cost',
+    'Website': 'website',
+  };
+  for (const [from, to] of Object.entries(map)) ev[to] = fields[from] || '';
+
+  // Local preview of the upload — the Drive URL arrives on the next real fetch.
+  if (file) ev.eventImage = URL.createObjectURL(file);
+
+  state.events.push(ev);
+  state.events.sort((a, b) =>
+    (a.startDate + (a.startTime || '00:00'))
+      .localeCompare(b.startDate + (b.startTime || '00:00'))
+  );
+
+  indexDates();
+  applyFilter();
 }
 
 function setStatus(node, message, cls) {
