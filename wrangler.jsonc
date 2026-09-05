@@ -17,9 +17,9 @@
 
   // Uncomment after creating the KV namespace in the dashboard and pasting
   // its ID. The Worker runs without it — it just skips caching.
-  // "kv_namespaces": [
-  //   { "binding": "EVENTS_CACHE", "id": "PASTE_NAMESPACE_ID_HERE" }
-  // ],
+  "kv_namespaces": [
+    { "binding": "EVENTS_CACHE", "id": "5c4c0a8bb8eb45b797298576c545d7bb" }
+  ],
 
   "vars": {
     // Public Turnstile key. Safe to commit — the secret half is a Worker secret.

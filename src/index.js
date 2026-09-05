@@ -16,7 +16,7 @@
  */
 
 const CACHE_KEY = 'events:v1';
-const CACHE_TTL = 300;                       // seconds
+const CACHE_TTL = 86400                       // seconds
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_BODY_BYTES = 8 * 1024 * 1024;      // base64 inflates ~33%
 const ALLOWED_IMAGE_TYPES = [
@@ -75,7 +75,7 @@ async function handleEvents(request, env, ctx) {
       return new Response(cached, {
         headers: {
           'content-type': 'application/json; charset=utf-8',
-          'cache-control': 'public, max-age=60',
+          'cache-control': 'no-cache',
           'x-cache': 'HIT',
         },
       });
