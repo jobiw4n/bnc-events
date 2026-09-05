@@ -333,8 +333,8 @@ const FIELD_MAP = {
 };
 
 const REQUIRED = [
-  'Event Name', 'Organizer Name', 'Organizer Phone', 'Organizer Email',
-  'Start Date', 'Event Type', 'Location Name', 'Description', 'Cost',
+  'Event Name', 'Organizer Name', ,
+  'Start Date', 'Event Type', 'Location Name', 'Description', 
 ];
 
 function wireForm() {
