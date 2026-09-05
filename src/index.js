@@ -112,7 +112,7 @@ async function handleEvents(request, env, ctx) {
   return new Response(body, {
     headers: {
       'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'public, max-age=60',
+      'cache-control': 'no-cache',
       'x-cache': 'MISS',
     },
   });
