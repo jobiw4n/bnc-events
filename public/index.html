@@ -136,7 +136,7 @@
 
           <div class="field">
             <label for="f-start-time">Start time</label>
-            <input id="f-start-time" type="time">
+            <input id="f-start-time" type="time"  step="900">
           </div>
 
           <div class="field">
@@ -147,7 +147,7 @@
 
           <div class="field">
             <label for="f-end-time">End time</label>
-            <input id="f-end-time" type="time">
+            <input id="f-end-time" type="time"  step="900">
           </div>
         </fieldset>
 
@@ -232,7 +232,10 @@
     </p>
   </div>
 </footer>
-
+<div class="lightbox" id="lightbox" hidden>
+  <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close image">&times;</button>
+  <img id="lightbox-img" alt="">
+</div>
 <script src="/app.js"></script>
 </body>
 </html>

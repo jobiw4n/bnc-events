@@ -17,6 +17,37 @@ const state = {
 
 const el = (id) => document.getElementById(id);
 
+function wireLightbox() {
+  const box = el('lightbox');
+  const img = el('lightbox-img');
+  let lastFocus = null;
+
+  const close = () => {
+    box.hidden = true;
+    img.removeAttribute('src');
+    if (lastFocus) lastFocus.focus();
+  };
+
+  // Delegated, because event rows are replaced on every render.
+  document.addEventListener('click', (e) => {
+    const thumb = e.target.closest('.event-thumb');
+    if (!thumb) return;
+    lastFocus = thumb;
+    img.src = thumb.src;
+    img.alt = thumb.alt || '';
+    box.hidden = false;
+    el('lightbox-close').focus();
+  });
+
+  box.addEventListener('click', (e) => {
+    if (e.target === box || e.target.id === 'lightbox-close') close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !box.hidden) close();
+  });
+}
+
 /* ------------------------------------------------------------------ init */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
   wireViews();
   wireSearch();
   wireForm();
+  wireLightbox();
 });
 
 /* ---------------------------------------------------------------- config */
@@ -169,7 +201,7 @@ function eventRow(ev, start) {
 
   const tags = [];
   if (ev.cost) tags.push('<span class="tag tag-cost">' + esc(ev.cost) + '</span>');
-  if (ev.eventType) tags.push('<span class="tag">' + esc(ev.eventType) + '</span>');
+  // if (ev.eventType) tags.push('<span class="tag">' + esc(ev.eventType) + '</span>');
   if (ev.organizerName) tags.push('<span class="tag">' + esc(ev.organizerName) + '</span>');
 
   const title = ev.website
