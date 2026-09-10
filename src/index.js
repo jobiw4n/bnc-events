@@ -25,7 +25,7 @@ const ALLOWED_IMAGE_TYPES = [
 
 const REQUIRED_FIELDS = [
   'Event Name', 'Organizer Name', 
-  'Start Date', 'Event Type', 'Location Name', 'Description', 'Cost',
+  'Start Date', 'Event Type', 'Location Name', 'Description',
 ];
 
 const ALLOWED_FIELDS = [
