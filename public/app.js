@@ -342,15 +342,15 @@ function wireForm() {
   const typeSelect = el('f-type');
 
   // A street address only makes sense when people physically show up.
-  const syncAddress = () => {
-    const virtual = typeSelect.value === 'Virtual';
-    el('addr-req').style.display = virtual ? 'none' : '';
-    el('loc-name-help').textContent = virtual
-      ? 'Name the platform, such as Zoom.'
-      : 'For virtual events, name the platform.';
-  };
-  typeSelect.addEventListener('change', syncAddress);
-  syncAddress();
+  // const syncAddress = () => {
+  //   const virtual = typeSelect.value === 'Virtual';
+  //   el('addr-req').style.display = virtual ? 'none' : '';
+  //   el('loc-name-help').textContent = virtual
+  //     ? 'Name the platform, such as Zoom.'
+  //     : 'For virtual events, name the platform.';
+  // };
+  // typeSelect.addEventListener('change', syncAddress);
+  // syncAddress();
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -371,9 +371,9 @@ async function submitForm() {
   Object.values(FIELD_MAP).forEach((id) => el(id).removeAttribute('aria-invalid'));
 
   const missing = REQUIRED.filter((k) => !event[k]);
-  if (event['Event Type'] !== 'Virtual' && !event['Location Address']) {
-    missing.push('Street Address');
-  }
+  // if (event['Event Type'] !== 'Virtual' && !event['Location Address']) {
+  //   missing.push('Street Address');
+  // }
 
   if (missing.length) {
     missing.forEach((k) => {

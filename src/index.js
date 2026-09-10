@@ -166,9 +166,9 @@ async function handleSubmit(request, env) {
   if (!['in-person', 'virtual', 'hybrid'].includes(type)) {
     return json({ ok: false, error: 'Event Type must be In-Person, Virtual, or Hybrid.' }, 400);
   }
-  if ((type === 'in-person' || type === 'hybrid') && !event['Location Address']) {
-    return json({ ok: false, error: 'A location address is required for in-person and hybrid events.' }, 400);
-  }
+  // if ((type === 'in-person' || type === 'hybrid') && !event['Location Address']) {
+  //   return json({ ok: false, error: 'A location address is required for in-person and hybrid events.' }, 400);
+  // }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(event['Start Date'])) {
     return json({ ok: false, error: 'Start Date must be YYYY-MM-DD.' }, 400);
   }
