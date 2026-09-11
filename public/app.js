@@ -593,8 +593,21 @@ function esc(value) {
 
 function wireEventModal() {
   document.addEventListener('click', (e) => {
-    const link = e.target.closest('.event-open');
+    // The image has its own job (lightbox), and real links should behave
+    // like links — middle-click, ctrl-click, open in new tab.
+    if (e.target.closest('.event-thumb')) return;
+    if (e.target.closest('a') && !e.target.closest('.event-open')) return;
+
+    // Don't hijack a click that ended a text selection.
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) return;
+
+    const row = e.target.closest('.event');
+    if (!row) return;
+
+    const link = row.querySelector('.event-open');
     if (!link) return;
+
     e.preventDefault();
     const id = link.dataset.id;
     history.pushState({ eventId: id }, '', '#event/' + encodeURIComponent(id));
@@ -696,13 +709,13 @@ function eventDetail(ev) {
     block('Details', details) +
     block('Organizer', organizer) +
     block('Venue', venue) +
-    '<div class="detail-actions">' +
-      '<a href="' + googleCalendarUrl(ev) + '" target="_blank" rel="noopener noreferrer">' +
-        'Add to Google Calendar</a>' +
-      (ev.website
+    '<div class="detail-actions">' +      (ev.website
         ? '<a href="' + esc(ev.website) + '" target="_blank" rel="noopener noreferrer">' +
           'Event website</a>'
         : '') +
+      '<a href="' + googleCalendarUrl(ev) + '" target="_blank" rel="noopener noreferrer">' +
+        'Add to Google Calendar</a>' +
++
     '</div>'
   );
 }

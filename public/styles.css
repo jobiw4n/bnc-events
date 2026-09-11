@@ -219,6 +219,10 @@ a:hover { color: var(--ink); }
 }
 .tag-cost { border-color: var(--accent); color: var(--accent-dark); }
 
+.event { cursor: pointer; }
+.event:hover { background: #FAFBFA; }
+.event-title a { text-decoration: none; }
+
 /* Two events on one date is the conflict this calendar exists to prevent. */
 .conflict {
   display: block;
@@ -499,7 +503,7 @@ legend {
 
 .event-modal-panel {
   position: relative;
-  width: min(100%, 46rem);
+  width: min(100%, 64rem);
   background: var(--card);
   border: 1px solid var(--rule);
   padding: 2rem;
