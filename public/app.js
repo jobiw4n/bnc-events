@@ -715,7 +715,7 @@ function eventDetail(ev) {
         : '') +
       '<a href="' + googleCalendarUrl(ev) + '" target="_blank" rel="noopener noreferrer">' +
         'Add to Google Calendar</a>' +
-+
+          
     '</div>'
   );
 }
