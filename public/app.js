@@ -30,8 +30,8 @@ function wireLightbox() {
 
   // Delegated, because event rows are replaced on every render.
   document.addEventListener('click', (e) => {
-    const thumb = e.target.closest('.event-thumb');
-    if (!thumb) return;
+    const thumb = e.target.closest('.event-thumb, .detail-image');
+  if (!thumb) return;
     lastFocus = thumb;
     img.src = thumb.src;
     img.alt = thumb.alt || '';
@@ -46,6 +46,8 @@ function wireLightbox() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !box.hidden) close();
   });
+
+
 }
 
 /* ------------------------------------------------------------------ init */
@@ -57,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   wireSearch();
   wireForm();
   wireLightbox();
+  wireEventModal();
 });
 
 /* ---------------------------------------------------------------- config */
@@ -99,11 +102,14 @@ async function loadEvents() {
     state.events = data.events || [];
     indexDates();
     applyFilter();
+    syncFromHash()
   } catch (err) {
     body.innerHTML =
       '<div class="empty"><strong>The calendar did not load.</strong>' +
       'Refresh the page, or try again in a few minutes.</div>';
   }
+  
+
 }
 
 function indexDates() {
@@ -204,10 +210,8 @@ function eventRow(ev, start) {
   // if (ev.eventType) tags.push('<span class="tag">' + esc(ev.eventType) + '</span>');
   if (ev.organizerName) tags.push('<span class="tag">' + esc(ev.organizerName) + '</span>');
 
-  const title = ev.website
-    ? '<a href="' + esc(ev.website) + '" rel="noopener noreferrer" target="_blank">' +
-        esc(ev.eventName) + '</a>'
-    : esc(ev.eventName);
+  const title = '<a href="#event/' + esc(ev.id) + '" class="event-open" data-id="' +
+    esc(ev.id) + '">' + esc(ev.eventName) + '</a>';
 
   const thumb = ev.eventImage
     ? '<img class="event-thumb" src="' + esc(ev.eventImage) + '" alt="" loading="lazy">'
@@ -583,4 +587,165 @@ function esc(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+/* ----------------------------------------------------------- event modal */
+
+function wireEventModal() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('.event-open');
+    if (!link) return;
+    e.preventDefault();
+    const id = link.dataset.id;
+    history.pushState({ eventId: id }, '', '#event/' + encodeURIComponent(id));
+    openEvent(id);
+  });
+
+  el('event-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'event-modal' || e.target.id === 'event-modal-close') closeEvent();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !el('event-modal').hidden) closeEvent();
+  });
+
+  window.addEventListener('popstate', syncFromHash);
+}
+
+/** Opens the modal if the URL points at an event. Runs after events load. */
+function syncFromHash() {
+  const match = location.hash.match(/^#event\/(.+)$/);
+  if (match) openEvent(decodeURIComponent(match[1]));
+  else hideModal();
+}
+
+function openEvent(id) {
+  const ev = state.events.find((e) => e.id === id);
+  if (!ev) return;                       // stale link, or events not loaded yet
+  el('event-modal-body').innerHTML = eventDetail(ev);
+  el('event-modal').hidden = false;
+  document.body.style.overflow = 'hidden';
+  el('event-modal-close').focus();
+}
+
+function closeEvent() {
+  // Back, so the URL and history stay in step.
+  if (location.hash.startsWith('#event/')) history.back();
+  else hideModal();
+}
+
+function hideModal() {
+  el('event-modal').hidden = true;
+  el('event-modal-body').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+function eventDetail(ev) {
+  const start = parseISODate(ev.startDate);
+  const end = parseISODate(ev.endDate);
+  const times = formatTimeRange(ev.startTime, ev.endTime);
+
+  const whenParts = [longDate(start)];
+  if (end && ev.endDate !== ev.startDate) whenParts.push('through ' + longDate(end));
+  if (times) whenParts.push(times);
+
+  const address = [ev.locationAddress, ev.locationCityStateZip].filter(Boolean).join(', ');
+
+  const details = [
+    ['Date', longDate(start)],
+    ['Time', times],
+    ['Cost', ev.cost],
+    ['Type', ev.eventType],
+    ['Website', ev.website
+      ? '<a href="' + esc(ev.website) + '" target="_blank" rel="noopener noreferrer">' +
+        esc(ev.website) + '</a>'
+      : ''],
+  ];
+
+  const organizer = [
+    ['Name', ev.organizerName],
+    ['Phone', SHOW_CONTACT && ev.organizerPhone
+      ? '<a href="tel:' + esc(ev.organizerPhone) + '">' + esc(ev.organizerPhone) + '</a>' : ''],
+    ['Email', SHOW_CONTACT && ev.organizerEmail
+      ? '<a href="mailto:' + esc(ev.organizerEmail) + '">' + esc(ev.organizerEmail) + '</a>' : ''],
+  ];
+
+  const venue = [
+    ['Venue', ev.locationName],
+    ['Address', address
+      ? esc(address) + ' <a href="https://maps.google.com/maps?q=' +
+        encodeURIComponent(address) + '" target="_blank" rel="noopener noreferrer">Map</a>'
+      : ''],
+    ['Phone', ev.locationPhone
+      ? '<a href="tel:' + esc(ev.locationPhone) + '">' + esc(ev.locationPhone) + '</a>' : ''],
+  ];
+
+  const paragraphs = String(ev.description || '')
+    .split(/\n+/)
+    .filter(Boolean)
+    .map((p) => '<p>' + esc(p) + '</p>')
+    .join('');
+
+  return (
+    (ev.eventImage
+      ? '<img class="detail-image" src="' + esc(ev.eventImage) + '" alt="">'
+      : '') +
+    '<h2 class="detail-title" id="event-modal-title">' + esc(ev.eventName) + '</h2>' +
+    '<p class="detail-when">' + esc(whenParts.join(' · ')) + '</p>' +
+    '<div class="detail-desc">' + paragraphs + '</div>' +
+    block('Details', details) +
+    block('Organizer', organizer) +
+    block('Venue', venue) +
+    '<div class="detail-actions">' +
+      '<a href="' + googleCalendarUrl(ev) + '" target="_blank" rel="noopener noreferrer">' +
+        'Add to Google Calendar</a>' +
+      (ev.website
+        ? '<a href="' + esc(ev.website) + '" target="_blank" rel="noopener noreferrer">' +
+          'Event website</a>'
+        : '') +
+    '</div>'
+  );
+}
+
+/** Values are pre-escaped or intentional markup; keys never are. */
+function block(heading, rows) {
+  const live = rows.filter(([, value]) => value);
+  if (!live.length) return '';
+  return '<div class="detail-block"><h3>' + esc(heading) + '</h3><dl>' +
+    live.map(([k, v]) => '<dt>' + esc(k) + '</dt><dd>' + v + '</dd>').join('') +
+    '</dl></div>';
+}
+
+function longDate(date) {
+  if (!date) return '';
+  return date.toLocaleDateString('en-US',
+    { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function googleCalendarUrl(ev) {
+  const stamp = (iso, time) => iso.replace(/-/g, '') +
+    (time ? 'T' + time.replace(':', '') + '00' : '');
+
+  let dates;
+  if (ev.startTime) {
+    const endDate = ev.endDate || ev.startDate;
+    const endTime = ev.endTime || ev.startTime;
+    dates = stamp(ev.startDate, ev.startTime) + '/' + stamp(endDate, endTime);
+  } else {
+    // All-day events use an exclusive end date.
+    const last = parseISODate(ev.endDate || ev.startDate);
+    last.setDate(last.getDate() + 1);
+    dates = ev.startDate.replace(/-/g, '') + '/' + toISO(last).replace(/-/g, '');
+  }
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: ev.eventName || '',
+    details: ev.description || '',
+    location: [ev.locationName, ev.locationAddress, ev.locationCityStateZip]
+      .filter(Boolean).join(', '),
+    dates,
+    ctz: 'America/New_York',
+  });
+  return 'https://calendar.google.com/calendar/render?' + params.toString();
 }

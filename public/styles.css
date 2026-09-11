@@ -481,3 +481,81 @@ legend {
 .event-thumb { cursor: zoom-in; }
 
 .lightbox[hidden] { display: none; }
+
+/* ---------------------------------------------------------- event modal */
+
+.event-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+  background: rgb(20 32 43 / .8);
+}
+.event-modal[hidden] { display: none; }
+
+.event-modal-panel {
+  position: relative;
+  width: min(100%, 46rem);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  padding: 2rem;
+}
+.event-modal-close {
+  position: absolute;
+  top: .5rem;
+  right: .75rem;
+  font-size: 1.9rem;
+  line-height: 1;
+  padding: .2rem .5rem;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.event-modal-close:hover { color: var(--ink); }
+
+.detail-title { font-size: clamp(1.5rem, 4vw, 2.1rem); margin: 0 1.5rem .4rem 0; }
+.detail-when { font-size: 1.05rem; color: var(--ink-soft); margin: 0 0 1.25rem; }
+.detail-image {
+  width: 100%;
+  max-height: 22rem;
+  object-fit: contain;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  cursor: zoom-in;
+  margin-bottom: 1.25rem;
+}
+.detail-desc p { margin: 0 0 .9rem; }
+
+.detail-block {
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+  margin-top: 1.25rem;
+}
+.detail-block h3 { font-size: 1.05rem; margin-bottom: .5rem; }
+.detail-block dl { display: grid; grid-template-columns: 9rem 1fr; gap: .35rem 1rem; margin: 0; }
+.detail-block dt { font-weight: 600; font-size: .9rem; }
+.detail-block dd { margin: 0; font-size: .95rem; }
+
+.detail-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.5rem; }
+.detail-actions a {
+  font-size: .9rem;
+  font-weight: 500;
+  padding: .45rem .9rem;
+  text-decoration: none;
+  color: var(--accent-dark);
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+}
+.detail-actions a:hover { background: var(--accent); color: #fff; }
+
+@media (max-width: 46rem) {
+  .event-modal { padding: 0; }
+  .event-modal-panel { padding: 1.25rem; min-height: 100%; }
+  .detail-block dl { grid-template-columns: 1fr; gap: .15rem; }
+  .detail-block dd { margin-bottom: .5rem; }
+}
